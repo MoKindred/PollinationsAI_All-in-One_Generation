@@ -1457,42 +1457,81 @@ function getDefaultModelsWithMetadata(type) {
       }
     },
     video: {
-      "gen-3": {
-        id: "gen-3",
-        name: t === "zh" ? "Runway Gen-3 (默认)" : "Runway Gen-3 (Default)",
-        pricing: t === "zh" ? "$0.12/秒 (1080p)" : "$0.12/second (1080p)",
-        capabilities: t === "zh" ? "文本生成视频、图片转视频、高质量" : "Text-to-video, image-to-video, high quality",
+      "veo": {
+        id: "veo",
+        name: t === "zh" ? "Veo 3.1 Fast (默认)" : "Veo 3.1 Fast (Default)",
+        pricing: t === "zh" ? "0.15 pollen/秒" : "0.15 pollen/second",
+        capabilities: t === "zh" ? "Google视频生成模型 (预览)" : "Google's video generation model (preview)",
         metadata: {
           duration: [2, 60],
-          resolution: ["720p", "1080p", "4K"],
-          fps: [15, 30, 60],
-          inference_time: t === "zh" ? "15-40秒" : "15-40 seconds",
+          resolution: ["720p", "1080p"],
+          input_modalities: ["text", "image"],
+          output_modalities: ["video"],
           status: "available"
         }
       },
-      "pika-1.0": {
-        id: "pika-1.0",
-        name: t === "zh" ? "Pika 1.0" : "Pika 1.0",
-        pricing: t === "zh" ? "$0.10/秒 (1080p)" : "$0.10/second (1080p)",
-        capabilities: t === "zh" ? "动漫视频生成、风格化视频" : "Anime video generation, stylized video",
+      "seedance": {
+        id: "seedance",
+        name: t === "zh" ? "Seedance Lite" : "Seedance Lite",
+        pricing: t === "zh" ? "按Token计费" : "Token-based pricing",
+        capabilities: t === "zh" ? "BytePlus视频生成 (更高质量)" : "BytePlus video generation (better quality)",
         metadata: {
           duration: [2, 30],
           resolution: ["720p", "1080p"],
-          fps: [15, 30, 60],
-          inference_time: t === "zh" ? "20-45秒" : "20-45 seconds",
+          input_modalities: ["text", "image"],
+          output_modalities: ["video"],
           status: "available"
         }
       },
-      "sora": {
-        id: "sora",
-        name: t === "zh" ? "Sora" : "Sora",
-        pricing: t === "zh" ? "邀请制/按量计费" : "Invitation-only/Pay-as-you-go",
-        capabilities: t === "zh" ? "长视频生成、高分辨率" : "Long video generation, high resolution",
+      "seedance-pro": {
+        id: "seedance-pro",
+        name: t === "zh" ? "Seedance Pro" : "Seedance Pro",
+        pricing: t === "zh" ? "按Token计费" : "Token-based pricing",
+        capabilities: t === "zh" ? "BytePlus视频生成 (更好的提示词遵循)" : "BytePlus video generation (better prompt adherence)",
         metadata: {
-          duration: [10, 120],
-          resolution: ["1080p", "4K"],
-          fps: [24, 30, 60],
-          inference_time: t === "zh" ? "30-180秒" : "30-180 seconds",
+          duration: [2, 30],
+          resolution: ["720p", "1080p"],
+          input_modalities: ["text", "image"],
+          output_modalities: ["video"],
+          status: "available"
+        }
+      },
+      "wan": {
+        id: "wan",
+        name: t === "zh" ? "Wan 2.6" : "Wan 2.6",
+        pricing: t === "zh" ? "0.05 pollen/秒" : "0.05 pollen/second",
+        capabilities: t === "zh" ? "阿里巴巴文本/图片转视频 (带音频)" : "Alibaba text/image-to-video with audio",
+        metadata: {
+          duration: [2, 15],
+          resolution: ["720p", "1080p"],
+          input_modalities: ["text", "image"],
+          output_modalities: ["video"],
+          status: "available"
+        }
+      },
+      "grok-video": {
+        id: "grok-video",
+        name: t === "zh" ? "Grok Video" : "Grok Video",
+        pricing: t === "zh" ? "0.0025 pollen/秒" : "0.0025 pollen/second",
+        capabilities: t === "zh" ? "xAI视频生成" : "xAI video gen",
+        metadata: {
+          duration: [2, 30],
+          resolution: ["720p", "1080p"],
+          input_modalities: ["text", "image"],
+          output_modalities: ["video"],
+          status: "available"
+        }
+      },
+      "ltx-2": {
+        id: "ltx-2",
+        name: t === "zh" ? "LTX-2" : "LTX-2",
+        pricing: t === "zh" ? "0.01 pollen/秒" : "0.01 pollen/second",
+        capabilities: t === "zh" ? "快速文本转视频生成 (带音频)" : "Fast text-to-video generation with audio",
+        metadata: {
+          duration: [2, 30],
+          resolution: ["720p", "1080p"],
+          input_modalities: ["text"],
+          output_modalities: ["video"],
           status: "available"
         }
       }
@@ -1753,7 +1792,19 @@ document.getElementById("generate").addEventListener("click", async () => {
     case "video": loadingText = translations[t].generating_video; break;
     case "audio": loadingText = translations[t].generating_audio; break;
   }
-  res.innerHTML = `<div class="loading">${loadingText}</div>`;
+  // 添加更明显的加载动画
+  res.innerHTML = `
+    <div class="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+      <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--p); animation: spin 1s ease-in-out infinite; margin-bottom: 16px;"></div>
+      <div>${loadingText}</div>
+      <div style="font-size: 12px; color: var(--gray); margin-top: 8px;">请耐心等待，生成过程可能需要几秒钟时间</div>
+    </div>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  `;
 
   try {
     if (currentType === "text") {
@@ -1768,9 +1819,6 @@ document.getElementById("generate").addEventListener("click", async () => {
         content: prompt,
         timestamp: new Date().toISOString()
       });
-
-      // 显示对话历史（包含用户消息）
-      renderChatHistory();
 
       // 构建消息数组，包含完整对话历史
       const messages = chatHistory.map(msg => ({
@@ -1847,17 +1895,62 @@ document.getElementById("generate").addEventListener("click", async () => {
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `${base}${generateEndpoints.image}/${encodedPrompt}?${imageParams.toString()}`;
       
+      // 保持加载动画，直到图片加载完成
       res.innerHTML = `
         <div class="media-container">
           <div class="media-info">
             ${translations[t].using_model}: ${selectedModel} | ${translations[t].dimensions}: ${width}x${height}
           </div>
-          <img src="${url}" alt="${t === 'zh' ? 'Pollinations生成图片' : 'Pollinations Generated Image'}" loading="lazy">
-          <a href="${url}" target="_blank" download class="download-btn">
-            📥 ${translations[t].download_image}
-          </a>
+          <div id="image-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+            <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--p); animation: spin 1s ease-in-out infinite; margin-bottom: 16px;"></div>
+            <div>${translations[t].generating_image}</div>
+            <div style="font-size: 12px; color: var(--gray); margin-top: 8px;">请耐心等待，图片生成可能需要几秒钟时间</div>
+          </div>
+          <div id="image-container" style="display: none;">
+            <img id="generated-image" alt="${t === 'zh' ? 'Pollinations生成图片' : 'Pollinations Generated Image'}">
+            <a id="download-link" href="" target="_blank" download class="download-btn">
+              📥 ${translations[t].download_image}
+            </a>
+          </div>
         </div>
+        <style>
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        </style>
       `;
+      
+      // 使用JavaScript监听图片加载完成
+      const img = document.getElementById('generated-image');
+      const downloadLink = document.getElementById('download-link');
+      const loadingDiv = document.getElementById('image-loading');
+      const imageContainer = document.getElementById('image-container');
+      
+      if (img && downloadLink) {
+        // 设置下载链接
+        downloadLink.href = url;
+        
+        // 设置图片加载完成事件
+        img.onload = function() {
+          loadingDiv.style.display = 'none';
+          imageContainer.style.display = 'block';
+        };
+        
+        // 图片加载失败时也隐藏加载动画
+        img.onerror = function() {
+          loadingDiv.style.display = 'none';
+          imageContainer.style.display = 'block';
+        };
+        
+        // 设置超时，防止加载时间过长
+        setTimeout(function() {
+          loadingDiv.style.display = 'none';
+          imageContainer.style.display = 'block';
+        }, 30000); // 30秒超时
+        
+        // 立即设置图片源，触发图片加载（即触发图片生成请求）
+        img.src = url;
+      }
     } 
     else if (currentType === "video") {
       // 视频生成 - 严格遵循官方/video接口规范
@@ -1882,19 +1975,56 @@ document.getElementById("generate").addEventListener("click", async () => {
       const url = `${base}${generateEndpoints.video}/${encodedPrompt}?${videoParams.toString()}`;
       const posterUrl = `https://pollinations.ai/p/${encodedPrompt}?width=640&height=360`;
       
+      // 保持加载动画，直到视频加载完成
       res.innerHTML = `
         <div class="media-container">
           <div class="media-info">
             ${translations[t].using_model}: ${selectedModel} | ${translations[t].duration}: ${duration}s | ${translations[t].resolution}: ${resolution} | ${translations[t].fps}: ${fps} | 宽高比: ${aspectRatio}
           </div>
-          <video controls src="${url}" poster="${posterUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 12px;">
-            ${translations[t].browser_not_support_video}
-          </video>
-          <a href="${url}" target="_blank" download class="download-btn">
-            📥 ${translations[t].download_video}
-          </a>
+          <div id="video-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+            <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--p); animation: spin 1s ease-in-out infinite; margin-bottom: 16px;"></div>
+            <div>${translations[t].generating_video}</div>
+            <div style="font-size: 12px; color: var(--gray); margin-top: 8px;">请耐心等待，视频生成可能需要几秒钟时间</div>
+          </div>
+          <div id="video-container" style="display: none;">
+            <video controls src="${url}" poster="${posterUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 12px;">
+              ${translations[t].browser_not_support_video}
+            </video>
+            <a href="${url}" target="_blank" download class="download-btn">
+              📥 ${translations[t].download_video}
+            </a>
+          </div>
         </div>
+        <style>
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        </style>
       `;
+      
+      // 使用JavaScript监听视频加载完成
+      const video = res.querySelector('video');
+      const loadingDiv = document.getElementById('video-loading');
+      const videoContainer = document.getElementById('video-container');
+      
+      if (video) {
+        video.onloadeddata = function() {
+          loadingDiv.style.display = 'none';
+          videoContainer.style.display = 'block';
+        };
+        
+        // 视频加载失败时也隐藏加载动画
+        video.onerror = function() {
+          loadingDiv.style.display = 'none';
+          videoContainer.style.display = 'block';
+        };
+        
+        // 设置超时，防止加载时间过长
+        setTimeout(function() {
+          loadingDiv.style.display = 'none';
+          videoContainer.style.display = 'block';
+        }, 60000); // 60秒超时
+      }
     } 
     else if (currentType === "audio") {
       // 音频生成 - 严格遵循官方/audio接口规范
@@ -1921,19 +2051,56 @@ document.getElementById("generate").addEventListener("click", async () => {
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `${base}${generateEndpoints.audio}/${encodedPrompt}?${audioParams.toString()}`;
       
+      // 保持加载动画，直到音频加载完成
       res.innerHTML = `
         <div class="media-container">
           <div class="media-info">
             ${translations[t].using_model}: ${selectedModel} | ${translations[t].duration}: ${duration}s | ${translations[t].voice}: ${voice} | ${translations[t].format}: ${format} | 语速: ${speed}
           </div>
-          <audio controls src="${url}" style="width: 100%; margin-bottom: 12px;">
-            ${translations[t].browser_not_support_audio}
-           </audio>
-          <a href="${url}" target="_blank" download class="download-btn">
-            📥 ${translations[t].download_audio}
-          </a>
+          <div id="audio-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+            <div style="width: 40px; height: 40px; border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--p); animation: spin 1s ease-in-out infinite; margin-bottom: 16px;"></div>
+            <div>${translations[t].generating_audio}</div>
+            <div style="font-size: 12px; color: var(--gray); margin-top: 8px;">请耐心等待，音频生成可能需要几秒钟时间</div>
+          </div>
+          <div id="audio-container" style="display: none;">
+            <audio controls src="${url}" style="width: 100%; margin-bottom: 12px;">
+              ${translations[t].browser_not_support_audio}
+             </audio>
+            <a href="${url}" target="_blank" download class="download-btn">
+              📥 ${translations[t].download_audio}
+            </a>
+          </div>
         </div>
+        <style>
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        </style>
       `;
+      
+      // 使用JavaScript监听音频加载完成
+      const audio = res.querySelector('audio');
+      const loadingDiv = document.getElementById('audio-loading');
+      const audioContainer = document.getElementById('audio-container');
+      
+      if (audio) {
+        audio.onloadeddata = function() {
+          loadingDiv.style.display = 'none';
+          audioContainer.style.display = 'block';
+        };
+        
+        // 音频加载失败时也隐藏加载动画
+        audio.onerror = function() {
+          loadingDiv.style.display = 'none';
+          audioContainer.style.display = 'block';
+        };
+        
+        // 设置超时，防止加载时间过长
+        setTimeout(function() {
+          loadingDiv.style.display = 'none';
+          audioContainer.style.display = 'block';
+        }, 30000); // 30秒超时
+      }
     }
   } catch (e) {
     res.innerHTML = `<div class="error">❌ ${translations[t].generating_failed}：${e.message}</div>`;
