@@ -430,7 +430,46 @@ function processModelMetadata(models, type) {
         const isVideoModel = model.outputModalities && model.outputModalities.includes('video');
         const isImageModel = !isVideoModel;
         
-        if ((type === 'video' && isVideoModel) || (type === 'image' && isImageModel) || type !== 'video' && type !== 'image') {
+        if (type === 'video' && isVideoModel) {
+          metadata[modelId] = {
+            id: modelId,
+            name: model.name || model.id,
+            pricing: model.pricing ? 
+              (t === "zh" ? "按Token计费" : "Token-based pricing") : 
+              translations[t].pricing + ": N/A",
+            capabilities: model.description || "Basic generation capabilities",
+            metadata: {
+              ...model,
+              status: "available"
+            }
+          };
+        } else if (type === 'image' && isImageModel) {
+          metadata[modelId] = {
+            id: modelId,
+            name: model.name || model.id,
+            pricing: model.pricing ? 
+              (t === "zh" ? "按Token计费" : "Token-based pricing") : 
+              translations[t].pricing + ": N/A",
+            capabilities: model.description || "Basic generation capabilities",
+            metadata: {
+              ...model,
+              status: "available"
+            }
+          };
+        } else if (type === 'text' && !isVideoModel && !isImageModel) {
+          metadata[modelId] = {
+            id: modelId,
+            name: model.name || model.id,
+            pricing: model.pricing ? 
+              (t === "zh" ? "按Token计费" : "Token-based pricing") : 
+              translations[t].pricing + ": N/A",
+            capabilities: model.description || "Basic generation capabilities",
+            metadata: {
+              ...model,
+              status: "available"
+            }
+          };
+        } else if (type === 'audio' && !isVideoModel && !isImageModel) {
           metadata[modelId] = {
             id: modelId,
             name: model.name || model.id,
@@ -466,16 +505,47 @@ function processModelMetadata(models, type) {
       const isVideoModel = modelId.includes("veo") || modelId.includes("seedance") || modelId.includes("wan") || modelId.includes("grok-video") || modelId.includes("ltx-2");
       const isImageModel = !isVideoModel && (modelId.includes("flux") || modelId.includes("sd") || modelId.includes("gptimage") || modelId.includes("kontext") || modelId.includes("nanobanana") || modelId.includes("seedream") || modelId.includes("zimage") || modelId.includes("klein") || modelId.includes("imagen") || modelId.includes("grok-imagine"));
       
-      if ((type === 'video' && isVideoModel) || (type === 'image' && isImageModel) || type !== 'video' && type !== 'image') {
+      if (type === 'video' && isVideoModel) {
         metadata[modelId] = {
           id: modelId,
           name: modelId,
           pricing: translations[t].pricing + ": N/A",
           capabilities: "Basic generation capabilities",
           metadata: {
-            type: isVideoModel ? "video" : isImageModel ? "image" : 
-                  modelId.includes("gpt") ? "text":
-                  modelId.includes("music") ? "audio" : "text",
+            type: "video",
+            status: "available"
+          }
+        };
+      } else if (type === 'image' && isImageModel) {
+        metadata[modelId] = {
+          id: modelId,
+          name: modelId,
+          pricing: translations[t].pricing + ": N/A",
+          capabilities: "Basic generation capabilities",
+          metadata: {
+            type: "image",
+            status: "available"
+          }
+        };
+      } else if (type === 'text' && !isVideoModel && !isImageModel) {
+        metadata[modelId] = {
+          id: modelId,
+          name: modelId,
+          pricing: translations[t].pricing + ": N/A",
+          capabilities: "Basic generation capabilities",
+          metadata: {
+            type: "text",
+            status: "available"
+          }
+        };
+      } else if (type === 'audio' && !isVideoModel && !isImageModel) {
+        metadata[modelId] = {
+          id: modelId,
+          name: modelId,
+          pricing: translations[t].pricing + ": N/A",
+          capabilities: "Basic generation capabilities",
+          metadata: {
+            type: "audio",
             status: "available"
           }
         };
@@ -669,7 +739,7 @@ function getDefaultModelsWithMetadata(type) {
         id: "grok-video",
         name: t === "zh" ? "Grok Video" : "Grok Video",
         pricing: t === "zh" ? "0.0025 pollen/秒" : "0.0025 pollen/second",
-        capabilities: t === "zh" ? "xAI视频生成" : "xAI video gen",
+        capabilities: t === "zh" ? "xAI视频生成" : "xAI video generation",
         metadata: {
           duration: [2, 30],
           resolution: ["720p", "1080p"],
