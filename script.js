@@ -345,24 +345,18 @@ document.getElementById("testApi").addEventListener("click", async () => {
   document.getElementById("testApi").disabled = true;
   generateBtn.disabled = true;
   
+  console.log("=== Starting API Test ===");
+  console.log("API Key:", key.substring(0, 10) + "...");
+  
   try {
-    const testResponse = await fetch(`${base}/v1/models`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${key}`,
-        "Content-Type": "application/json"
-      },
-      timeout: 10000
-    });
-    
-    if (!testResponse.ok) {
-      throw new Error(`API verification failed: ${testResponse.status} ${testResponse.statusText}`);
-    }
-    
     const modelTypes = ["text", "image", "video", "audio"];
     let allTypesLoaded = true;
+    let anyTypeSucceeded = false;
     
     for (const type of modelTypes) {
+      console.log(`=== Loading ${type} models ===`);
+      console.log(`Endpoint: ${base}${modelEndpoints[type]}`);
+      
       try {
         const modelResponse = await fetch(`${base}${modelEndpoints[type]}`, {
           method: "GET",
@@ -373,10 +367,17 @@ document.getElementById("testApi").addEventListener("click", async () => {
           timeout: 10000
         });
         
+        console.log(`${type} response status:`, modelResponse.status, modelResponse.statusText);
+        
         if (modelResponse.ok) {
           const models = await modelResponse.json();
+          console.log(`${type} raw data:`, models);
+          console.log(`${type} data type:`, Array.isArray(models) ? 'array' : typeof models);
+          
           allModelsMetadata[type] = processModelMetadata(models, type);
+          console.log(`${type} processed metadata:`, allModelsMetadata[type]);
           populateModelList(`${type}-model`, allModelsMetadata[type], type);
+          anyTypeSucceeded = true;
         } else {
           console.warn(`Failed to load ${type} model list, using default list`);
           const defaultModels = getDefaultModelsWithMetadata(type);
@@ -391,6 +392,10 @@ document.getElementById("testApi").addEventListener("click", async () => {
         populateModelList(`${type}-model`, defaultModels, type);
         allTypesLoaded = false;
       }
+    }
+    
+    if (!anyTypeSucceeded) {
+      throw new Error("API Key is invalid or no models could be loaded");
     }
     
     apiKeyValid = true;
@@ -423,12 +428,18 @@ function processModelMetadata(models, type) {
   const metadata = {};
   const t = currentLang;
   
+  console.log(`Processing ${type} models:`, models);
+  
   if (Array.isArray(models)) {
+    console.log(`Branch: Array.isArray(models) - processing ${models.length} models`);
     models.forEach(model => {
       const modelId = model.name || model.id;
       if (modelId) {
-        const isVideoModel = model.outputModalities && model.outputModalities.includes('video');
-        const isImageModel = !isVideoModel;
+        const outputModalities = model.outputModalities || model.output_modalities || [];
+        const isVideoModel = outputModalities.includes('video');
+        const isImageModel = outputModalities.includes('image');
+        
+        console.log(`Model ${modelId}: outputModalities=${JSON.stringify(outputModalities)}, isVideoModel=${isVideoModel}, isImageModel=${isImageModel}`);
         
         if (type === 'video' && isVideoModel) {
           metadata[modelId] = {
@@ -443,7 +454,7 @@ function processModelMetadata(models, type) {
               status: "available"
             }
           };
-        } else if (type === 'image' && isImageModel) {
+        } else if (type === 'image' && isImageModel && !isVideoModel) {
           metadata[modelId] = {
             id: modelId,
             name: model.name || model.id,
@@ -485,8 +496,10 @@ function processModelMetadata(models, type) {
         }
       }
     });
+    console.log(`Result for ${type}:`, Object.keys(metadata));
   }
   else if (models.data && Array.isArray(models.data)) {
+    console.log(`Branch: models.data`);
     models.data.forEach(item => {
       const modelId = item.id || item.name;
       if (modelId) {
@@ -501,6 +514,7 @@ function processModelMetadata(models, type) {
     });
   }
   else if (Array.isArray(models) && models.every(item => typeof item === "string")) {
+    console.log(`Branch: string array`);
     models.forEach(modelId => {
       const isVideoModel = modelId.includes("veo") || modelId.includes("seedance") || modelId.includes("wan") || modelId.includes("grok-video") || modelId.includes("ltx-2");
       const isImageModel = !isVideoModel && (modelId.includes("flux") || modelId.includes("sd") || modelId.includes("gptimage") || modelId.includes("kontext") || modelId.includes("nanobanana") || modelId.includes("seedream") || modelId.includes("zimage") || modelId.includes("klein") || modelId.includes("imagen") || modelId.includes("grok-imagine"));
@@ -553,6 +567,7 @@ function processModelMetadata(models, type) {
     });
   }
   else if (typeof models === "object" && models !== null) {
+    console.log(`Branch: object`);
     Object.entries(models).forEach(([key, value]) => {
       metadata[key] = {
         id: key,
