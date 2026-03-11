@@ -59,6 +59,7 @@ const translations = {
     seed_label: "种子值",
     enhance_label: "增强",
     transparent_label: "透明背景",
+    reference_image_label: "参考图 URL",
     duration_label: "时长 (秒)",
     resolution_label: "分辨率",
     res_720p: "720p",
@@ -168,6 +169,7 @@ const translations = {
     seed_label: "Seed",
     enhance_label: "Enhance",
     transparent_label: "Transparent",
+    reference_image_label: "Reference Image URL",
     duration_label: "Duration (seconds)",
     resolution_label: "Resolution",
     res_720p: "720p",
@@ -1084,6 +1086,7 @@ document.getElementById("generate").addEventListener("click", async () => {
       const seed = document.getElementById("image-seed").value;
       const enhance = document.getElementById("image-enhance").checked;
       const transparent = document.getElementById("image-transparent").checked;
+      const referenceImage = document.getElementById("image-reference").value;
       
       let imageParams = new URLSearchParams({
         width: width,
@@ -1100,6 +1103,7 @@ document.getElementById("generate").addEventListener("click", async () => {
       if (seed) imageParams.append("seed", seed);
       if (enhance) imageParams.append("enhance", "true");
       if (transparent) imageParams.append("transparent", "true");
+      if (referenceImage) imageParams.append("image", referenceImage);
       
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `${base}${generateEndpoints.image}/${encodedPrompt}?${imageParams.toString()}`;
@@ -1160,6 +1164,7 @@ document.getElementById("generate").addEventListener("click", async () => {
       const fps = document.getElementById("video-fps").value;
       const aspectRatio = document.getElementById("video-aspect").value;
       const audio = document.getElementById("video-audio").checked;
+      const referenceImage = document.getElementById("video-reference").value;
       
       let videoParams = new URLSearchParams({
         duration: duration,
@@ -1171,6 +1176,7 @@ document.getElementById("generate").addEventListener("click", async () => {
       });
       
       if (audio) videoParams.append("audio", "true");
+      if (referenceImage) videoParams.append("image", referenceImage);
       
       const encodedPrompt = encodeURIComponent(prompt);
       const url = `${base}${generateEndpoints.video}/${encodedPrompt}?${videoParams.toString()}`;
@@ -1347,6 +1353,61 @@ document.querySelectorAll(".tab").forEach(tab => {
   });
 });
 
+function handleFileUpload(inputElement, referenceInput, previewDiv) {
+  inputElement.addEventListener('change', function(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const dataUrls = [];
+    const previews = [];
+    
+    let processedCount = 0;
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      
+      reader.onload = function(event) {
+        const dataUrl = event.target.result;
+        dataUrls.push(dataUrl);
+        
+        const previewImg = document.createElement('img');
+        previewImg.src = dataUrl;
+        previewImg.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid var(--p); cursor: pointer;';
+        previewImg.title = file.name;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '×';
+        removeBtn.style.cssText = 'position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;';
+        removeBtn.onclick = function(e) {
+          e.stopPropagation();
+          const index = previews.indexOf(previewContainer);
+          if (index > -1) {
+            previews.splice(index, 1);
+            dataUrls.splice(index, 1);
+            previewContainer.remove();
+            referenceInput.value = dataUrls.join('|');
+          }
+        };
+        
+        const previewContainer = document.createElement('div');
+        previewContainer.style.cssText = 'position: relative;';
+        previewContainer.appendChild(previewImg);
+        previewContainer.appendChild(removeBtn);
+        previews.push(previewContainer);
+        previewDiv.appendChild(previewContainer);
+        
+        processedCount++;
+        if (processedCount === files.length) {
+          referenceInput.value = dataUrls.join('|');
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
 function init() {
   const detectedLang = detectUserLanguage();
   if (detectedLang !== currentLang) {
@@ -1354,6 +1415,20 @@ function init() {
   }
   
   document.getElementById("text-params").style.display = "flex";
+  
+  const imageUpload = document.getElementById('image-upload');
+  const imageReference = document.getElementById('image-reference');
+  const imagePreview = document.getElementById('image-preview');
+  if (imageUpload && imageReference && imagePreview) {
+    handleFileUpload(imageUpload, imageReference, imagePreview);
+  }
+  
+  const videoUpload = document.getElementById('video-upload');
+  const videoReference = document.getElementById('video-reference');
+  const videoPreview = document.getElementById('video-preview');
+  if (videoUpload && videoReference && videoPreview) {
+    handleFileUpload(videoUpload, videoReference, videoPreview);
+  }
 }
 
 window.addEventListener('DOMContentLoaded', init);
