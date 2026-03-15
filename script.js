@@ -1171,16 +1171,34 @@ document.getElementById("generate").addEventListener("click", async () => {
         img.onload = function() {
           loadingDiv.style.display = 'none';
           imageContainer.style.display = 'block';
+          // 图片加载完成后添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'image') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         img.onerror = function() {
           loadingDiv.style.display = 'none';
           imageContainer.style.display = 'block';
+          // 图片加载失败时也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'image') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         setTimeout(function() {
           loadingDiv.style.display = 'none';
           imageContainer.style.display = 'block';
+          // 超时后也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'image') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         }, 30000);
         
         img.src = url;
@@ -1244,16 +1262,34 @@ document.getElementById("generate").addEventListener("click", async () => {
         video.onloadeddata = function() {
           loadingDiv.style.display = 'none';
           videoContainer.style.display = 'block';
+          // 视频加载完成后添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'video') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         video.onerror = function() {
           loadingDiv.style.display = 'none';
           videoContainer.style.display = 'block';
+          // 视频加载失败时也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'video') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         setTimeout(function() {
           loadingDiv.style.display = 'none';
           videoContainer.style.display = 'block';
+          // 超时后也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'video') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         }, 60000);
       }
     } 
@@ -1314,16 +1350,34 @@ document.getElementById("generate").addEventListener("click", async () => {
         audio.onloadeddata = function() {
           loadingDiv.style.display = 'none';
           audioContainer.style.display = 'block';
+          // 音频加载完成后添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'audio') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         audio.onerror = function() {
           loadingDiv.style.display = 'none';
           audioContainer.style.display = 'block';
+          // 音频加载失败时也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'audio') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         };
         
         setTimeout(function() {
           loadingDiv.style.display = 'none';
           audioContainer.style.display = 'block';
+          // 超时后也添加到历史记录
+          if (currentGenerationParams && currentGenerationParams.type === 'audio') {
+            const { type, prompt, model, params } = currentGenerationParams;
+            addToHistory(type, prompt, url, model, params);
+            currentGenerationParams = null;
+          }
         }, 30000);
       }
     }
@@ -1633,6 +1687,9 @@ document.addEventListener('DOMContentLoaded', function() {
   renderHistory();
 });
 
+// 全局变量用于存储当前生成的参数
+let currentGenerationParams = null;
+
 // 修改生成函数，添加历史记录功能
 const originalGenerate = document.getElementById('generate').onclick;
 document.getElementById('generate').onclick = async function() {
@@ -1669,40 +1726,66 @@ document.getElementById('generate').onclick = async function() {
     params['audio-instrumental'] = document.getElementById('audio-instrumental').checked;
   }
   
+  // 存储当前生成的参数
+  currentGenerationParams = {
+    type: currentType,
+    prompt: prompt,
+    model: selectedModel,
+    params: params
+  };
+  
   // 调用原始生成函数
   await originalGenerate.call(this);
   
-  // 获取生成结果并添加到历史记录
-  const result = document.getElementById('result');
-  if (result && prompt && selectedModel) {
-    let resultData;
-    
-    if (currentType === 'text') {
-      const chatContent = result.querySelector('.chat-message.assistant .chat-content');
-      if (chatContent) {
-        resultData = chatContent.textContent;
-        addToHistory(currentType, prompt, resultData, selectedModel, params);
-      }
-    } else if (currentType === 'image') {
-      const img = result.querySelector('img');
-      if (img && img.src) {
-        resultData = img.src;
-        addToHistory(currentType, prompt, resultData, selectedModel, params);
-      }
-    } else if (currentType === 'video') {
-      const video = result.querySelector('video');
-      if (video && video.src) {
-        resultData = video.src;
-        addToHistory(currentType, prompt, resultData, selectedModel, params);
-      }
-    } else if (currentType === 'audio') {
-      const audio = result.querySelector('audio');
-      if (audio && audio.src) {
-        resultData = audio.src;
-        addToHistory(currentType, prompt, resultData, selectedModel, params);
-      }
+  // 对于文本生成，直接添加到历史记录
+  if (currentType === 'text' && prompt && selectedModel) {
+    const result = document.getElementById('result');
+    const chatContent = result.querySelector('.chat-message.assistant .chat-content');
+    if (chatContent) {
+      const resultData = chatContent.textContent;
+      addToHistory(currentType, prompt, resultData, selectedModel, params);
     }
   }
 };
 
-window.addEventListener('DOMContentLoaded', init);
+// 监听媒体元素加载完成事件，添加到历史记录
+function setupMediaHistoryListeners() {
+  // 监听图片加载完成
+  document.addEventListener('load', function(e) {
+    if (e.target.tagName === 'IMG' && e.target.id === 'generated-image' && currentGenerationParams) {
+      const { type, prompt, model, params } = currentGenerationParams;
+      if (type === 'image' && e.target.src) {
+        addToHistory(type, prompt, e.target.src, model, params);
+        currentGenerationParams = null;
+      }
+    }
+  }, true);
+  
+  // 监听视频加载完成
+  document.addEventListener('loadeddata', function(e) {
+    if (e.target.tagName === 'VIDEO' && currentGenerationParams) {
+      const { type, prompt, model, params } = currentGenerationParams;
+      if (type === 'video' && e.target.src) {
+        addToHistory(type, prompt, e.target.src, model, params);
+        currentGenerationParams = null;
+      }
+    }
+  }, true);
+  
+  // 监听音频加载完成
+  document.addEventListener('loadeddata', function(e) {
+    if (e.target.tagName === 'AUDIO' && currentGenerationParams) {
+      const { type, prompt, model, params } = currentGenerationParams;
+      if (type === 'audio' && e.target.src) {
+        addToHistory(type, prompt, e.target.src, model, params);
+        currentGenerationParams = null;
+      }
+    }
+  }, true);
+}
+
+// 在页面加载完成后设置媒体监听器和初始化
+window.addEventListener('DOMContentLoaded', function() {
+  setupMediaHistoryListeners();
+  init();
+});
