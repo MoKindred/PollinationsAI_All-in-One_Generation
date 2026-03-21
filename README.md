@@ -1,9 +1,39 @@
-# Pollinations AI 全能生成工具
+# Pollinations AI All-in-One Generation
+## Language / 语言
+- [English](#english)
+- [中文](#中文)
 
-一个功能强大的 Pollinations AI 一站式生成工具，支持文本、图片、视频、音频的 AI 生成。
+---
 
-## 功能特点
+# English
+### 🎯 Core Features
+- **Text Generation**: Supports major LLMs including openai、deepseek, etc.
+- **Image Generation**: Supports high-quality image models including Flux、zimage、gptimage、grok-imagine, etc.
+- **Video Generation**: Supports video models including Veo、Seedance、Grok Video, etc.
+- **Audio Generation**: Supports audio models including suno、whisper, etc.
 
+### 🌍 Multilingual Support
+- Chinese interface
+- English interface
+- Automatic browser language detection
+- Real-time language switching
+
+### 🎨 User Interface
+- Modern glassmorphism design
+- Responsive layout, mobile-friendly
+- Left-right split panel for easy operation
+- Real-time generation status feedback
+- Detailed model metadata display
+
+### ⚙️ Advanced Features
+- **Text Parameters**: Temperature, max length, role selection
+- **Image Parameters**: Size, style, negative prompt, quality, seed, enhancement, transparent background
+- **Video Parameters**: Duration, resolution, frame rate, aspect ratio, audio
+- **Audio Parameters**: Duration, voice, format, speed, instrumental-only
+
+---
+
+# 中文
 ### 🎯 核心功能
 - **文本生成**：支持多种大语言模型，包括 openai、deepseek 等
 - **图片生成**：支持 Flux、zimage、gptimage、grok-imagine 等高质量图片模型
