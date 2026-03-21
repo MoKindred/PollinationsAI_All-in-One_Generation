@@ -5,10 +5,10 @@
 ## 功能特点
 
 ### 🎯 核心功能
-- **文本生成**：支持多种大语言模型，包括 GPT-4o、Llama 3.1、Gemini 1.5、Claude 3 等
-- **图片生成**：支持 Flux、DALL-E 3、Stable Diffusion 3.0、Midjourney 等高质量图片模型
-- **视频生成**：支持 Veo、Seedance、Wan 2.6、Grok Video、LTX-2 等视频模型
-- **音频生成**：支持 MusicGen 2、ElevenLabs v2、AudioGen 2 等音频模型
+- **文本生成**：支持多种大语言模型，包括 openai、deepseek 等
+- **图片生成**：支持 Flux、zimage、gptimage、grok-imagine 等高质量图片模型
+- **视频生成**：支持 Veo、Seedance、Grok Video 等视频模型
+- **音频生成**：支持 suno、whisper 等音频模型
 
 ### 🌍 多语言支持
 - 中文界面
