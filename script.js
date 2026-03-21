@@ -1444,14 +1444,15 @@ document.querySelectorAll(".tab").forEach(tab => {
 });
 
 function handleFileUpload(inputElement, referenceInput, previewDiv) {
+  // 存储图片的DataURL
+  let currentDataUrl = '';
+  
   inputElement.addEventListener('change', function(e) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
-    const dataUrls = [];
-    const previews = [];
-    
-    let processedCount = 0;
+    // 清空之前的预览
+    previewDiv.innerHTML = '';
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -1459,41 +1460,44 @@ function handleFileUpload(inputElement, referenceInput, previewDiv) {
       
       reader.onload = function(event) {
         const dataUrl = event.target.result;
-        dataUrls.push(dataUrl);
+        currentDataUrl = dataUrl;
         
+        // 创建预览图片
         const previewImg = document.createElement('img');
         previewImg.src = dataUrl;
         previewImg.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid var(--p); cursor: pointer;';
         previewImg.title = file.name;
         
+        // 创建删除按钮
         const removeBtn = document.createElement('button');
         removeBtn.textContent = '×';
-        removeBtn.style.cssText = 'position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;';
+        removeBtn.style.cssText = 'position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;';
         removeBtn.onclick = function(e) {
           e.stopPropagation();
-          const index = previews.indexOf(previewContainer);
-          if (index > -1) {
-            previews.splice(index, 1);
-            dataUrls.splice(index, 1);
-            previewContainer.remove();
-            referenceInput.value = dataUrls.join('|');
-          }
+          previewContainer.remove();
+          currentDataUrl = '';
+          referenceInput.value = '';
         };
         
+        // 创建预览容器
         const previewContainer = document.createElement('div');
-        previewContainer.style.cssText = 'position: relative;';
+        previewContainer.style.cssText = 'position: relative; display: inline-block; margin: 5px;';
         previewContainer.appendChild(previewImg);
         previewContainer.appendChild(removeBtn);
-        previews.push(previewContainer);
         previewDiv.appendChild(previewContainer);
-        
-        processedCount++;
-        if (processedCount === files.length) {
-          referenceInput.value = dataUrls.join('|');
-        }
       };
       
       reader.readAsDataURL(file);
+    }
+  });
+  
+  // 重写referenceInput的value getter，在需要时才返回DataURL
+  Object.defineProperty(referenceInput, 'value', {
+    get: function() {
+      return currentDataUrl;
+    },
+    set: function(newValue) {
+      currentDataUrl = newValue;
     }
   });
 }
