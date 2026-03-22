@@ -363,6 +363,23 @@ function checkForApiKey() {
       console.log('Found apiKey input element, setting value...');
       apiKeyInput.value = apiKey;
       
+      // 复制API key到剪贴板
+      navigator.clipboard.writeText(apiKey).then(() => {
+        console.log('API key copied to clipboard');
+        // 显示复制成功提示
+        const testStatus = document.getElementById('testStatus');
+        if (testStatus) {
+          testStatus.className = 'test-status test-success';
+          testStatus.textContent = '✅ API key 已复制到剪贴板';
+          // 3秒后清除提示
+          setTimeout(() => {
+            testStatus.textContent = '';
+          }, 3000);
+        }
+      }).catch(err => {
+        console.error('Failed to copy API key: ', err);
+      });
+      
       // 自动测试API连接
       const testApiBtn = document.getElementById('testApi');
       if (testApiBtn) {
