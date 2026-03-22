@@ -350,16 +350,38 @@ document.getElementById('getApiKey').addEventListener('click', () => {
 
 // 检查URL哈希中是否包含API key
 function checkForApiKey() {
+  console.log('Checking for API key in URL hash...');
+  console.log('Current location hash:', location.hash);
+  
+  // 从URL哈希中获取API key
   const apiKey = new URLSearchParams(location.hash.slice(1)).get('api_key');
+  console.log('Found API key:', apiKey);
+  
   if (apiKey) {
-    document.getElementById('apiKey').value = apiKey;
-    // 自动测试API连接
-    document.getElementById('testApi').click();
+    const apiKeyInput = document.getElementById('apiKey');
+    if (apiKeyInput) {
+      console.log('Found apiKey input element, setting value...');
+      apiKeyInput.value = apiKey;
+      
+      // 自动测试API连接
+      const testApiBtn = document.getElementById('testApi');
+      if (testApiBtn) {
+        console.log('Found testApi button, clicking...');
+        testApiBtn.click();
+      } else {
+        console.error('testApi button not found');
+      }
+    } else {
+      console.error('apiKey input element not found');
+    }
   }
 }
 
 // 页面加载时检查API key
 window.addEventListener('DOMContentLoaded', checkForApiKey);
+
+// 页面哈希变化时也检查API key
+window.addEventListener('hashchange', checkForApiKey);
 
 let allModelsMetadata = {
   text: {},
