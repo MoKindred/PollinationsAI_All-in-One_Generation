@@ -440,23 +440,31 @@ window.addEventListener('DOMContentLoaded', function() {
   console.log('=== DOMContentLoaded event fired ===');
   loadApiKeyFromStorage();
   checkForApiKey();
+  
+  // 为随机种子按钮添加事件监听器
+  const randomSeedBtn = document.getElementById('random-seed');
+  if (randomSeedBtn) {
+    console.log('=== Found random-seed button, adding event listener ===');
+    randomSeedBtn.addEventListener('click', function() {
+      console.log('=== Random seed button clicked ===');
+      // 生成一个1到999999之间的随机数作为种子值
+      const randomSeed = Math.floor(Math.random() * 999999) + 1;
+      console.log('=== Generated random seed:', randomSeed);
+      const imageSeedInput = document.getElementById('image-seed');
+      if (imageSeedInput) {
+        console.log('=== Found image-seed input, setting value ===');
+        imageSeedInput.value = randomSeed;
+      } else {
+        console.error('=== image-seed input not found ===');
+      }
+    });
+  } else {
+    console.error('=== random-seed button not found ===');
+  }
 });
 
 // 页面哈希变化时也检查API key
 window.addEventListener('hashchange', checkForApiKey);
-
-// 为随机种子按钮添加事件监听器
-const randomSeedBtn = document.getElementById('random-seed');
-if (randomSeedBtn) {
-  randomSeedBtn.addEventListener('click', function() {
-    // 生成一个1到999999之间的随机数作为种子值
-    const randomSeed = Math.floor(Math.random() * 999999) + 1;
-    const imageSeedInput = document.getElementById('image-seed');
-    if (imageSeedInput) {
-      imageSeedInput.value = randomSeed;
-    }
-  });
-}
 
 // 当用户输入API key时，也存储到localStorage
 const apiKeyInput = document.getElementById('apiKey');
