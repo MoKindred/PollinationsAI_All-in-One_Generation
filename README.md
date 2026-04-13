@@ -2,7 +2,7 @@
 ## Language / 语言
 - [English](#english)
 - [中文](#中文)
-- [在线网站/Online Website](https://mokindred.github.io/PollinationsAI_All-in-One_Generation/)
+- [Online Website/在线网站](https://mokindred.github.io/PollinationsAI_All-in-One_Generation/)
 ---
 
 # English
