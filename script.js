@@ -347,7 +347,7 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 });
 
 document.getElementById('getApiKey').addEventListener('click', () => {
-  window.open('https://enter.pollinations.ai/authorize?redirect_url=https://mokindred.github.io&app_key=pk_rgbhWzNY9Zp3nBU9', '_blank');
+  window.open('https://enter.pollinations.ai/authorize?redirect_url=https://https://mokindred.github.io/PollinationsAI_All-in-One_Generation/&app_key=pk_rgbhWzNY9Zp3nBU9', '_blank');
 });
 
 // 检查URL哈希中是否包含API key
